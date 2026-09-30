@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>YOUNG RISER | PDF Tools & Notepad</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
+type="module"></script>
+
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+
+/* =========================
+   GLOBAL
+========================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:
+    Inter, Arial, sans-serif;
+
+    color:white;
+
+    background:
+    radial-gradient(circle at 20% 20%, #16213e 0%, transparent 35%),
+    radial-gradient(circle at 80% 80%, #24104f 0%, transparent 35%),
+    #050712;
+
+    min-height:100vh;
+}
+
+button,
+input,
+textarea{
+    font:inherit;
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+
+.background{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.orb{
+    position:absolute;
+    width:250px;
+    height:250px;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.25;
+    animation:float 8s infinite alternate;
+}
+
+.orb.one{
+    background:#00d9ff;
+    top:5%;
+    left:5%;
+}
+
+.orb.two{
+    background:#9b5cff;
+    bottom:5%;
+    right:5%;
+    animation-delay:2s;
+}
+
+@keyframes float{
+    from{
+        transform:translate(0,0);
+    }
+    to{
+        transform:translate(40px,-30px);
+    }
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    text-align:center;
+    padding:55px 20px 35px;
+}
+
+.logo{
+    font-size:clamp(35px,8vw,65px);
+    font-weight:900;
+    letter-spacing:4px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #fff,
+        #64eaff,
+        #a875ff,
+        #fff
+    );
+
+    background-size:300%;
+
+    -webkit-background-clip:text;
+    color:transparent;
+
+    animation:gradientMove 5s infinite;
+}
+
+@keyframes gradientMove{
+    0%{
+        background-position:0%;
+    }
+
+    50%{
+        background-position:100%;
+    }
+
+    100%{
+        background-position:0%;
+    }
+}
+
+.subtitle{
+    color:#aeb7d1;
+    margin-top:10px;
+}
+
+/* =========================
+   NAV
+========================= */
+
+nav{
+    width:min(900px,92%);
+    margin:auto;
+
+    display:flex;
+    justify-content:center;
+    gap:10px;
+
+    padding:10px;
+
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:20px;
+
+    position:sticky;
+    top:10px;
+
+    z-index:20;
+}
+
+nav button{
+    border:0;
+    background:transparent;
+    color:white;
+
+    padding:12px 18px;
+    border-radius:12px;
+
+    cursor:pointer;
+}
+
+nav button:hover{
+    background:rgba(255,255,255,.12);
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container{
+    width:min(1000px,92%);
+    margin:35px auto;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+
+.card{
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.10),
+        rgba(255,255,255,.035)
+    );
+
+    border:1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:blur(25px);
+
+    border-radius:25px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.25);
+
+    animation:fadeUp .6s ease;
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.card h2{
+    margin-top:0;
+}
+
+/* =========================
+   PDF UPLOAD
+========================= */
+
+.upload-box{
+
+    border:2px dashed rgba(100,234,255,.45);
+
+    border-radius:20px;
+
+    padding:45px 20px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.upload-box:hover{
+    background:rgba(100,234,255,.06);
+
+    border-color:#64eaff;
+
+    transform:translateY(-3px);
+}
+
+.upload-icon{
+    font-size:55px;
+}
+
+input[type=file]{
+    display:none;
+}
+
+.file-name{
+    color:#64eaff;
+    margin-top:12px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.main-btn{
+
+    width:100%;
+
+    border:0;
+
+    padding:15px;
+
+    margin-top:18px;
+
+    border-radius:14px;
+
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    background:
+    linear-gradient(
+        90deg,
+        #087cff,
+        #8b4dff
+    );
+
+    box-shadow:
+    0 10px 30px rgba(72,80,255,.3);
+
+    transition:.25s;
+}
+
+.main-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:
+    0 15px 40px rgba(72,80,255,.5);
+}
+
+.main-btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-container{
+    margin-top:20px;
+    display:none;
+}
+
+.progress{
+    width:100%;
+    height:9px;
+
+    background:#171b2d;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+
+    background:
+    linear-gradient(
+        90deg,
+        #00d9ff,
+        #9b5cff
+    );
+
+    transition:.3s;
+}
+
+.status{
+    text-align:center;
+    color:#aeb7d1;
+    margin-top:10px;
+}
+
+/* =========================
+   NOTEPAD
+========================= */
+
+textarea{
+
+    width:100%;
+
+    min-height:200px;
+
+    resize:vertical;
+
+    background:rgba(0,0,0,.25);
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    outline:none;
+}
+
+textarea:focus{
+    border-color:#64eaff;
+}
+
+/* =========================
+   NOTE CONTROLS
+========================= */
+
+.note-controls{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+}
+
+.note-controls button{
+
+    flex:1;
+
+    padding:12px;
+
+    border:0;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:rgba(255,255,255,.1);
+}
+
+.note-controls button:hover{
+    background:rgba(255,255,255,.18);
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    background:rgba(0,0,0,.25);
+
+    color:white;
+
+    outline:none;
+
+    margin-bottom:15px;
+}
+
+/* =========================
+   SAVED NOTES
+========================= */
+
+.note{
+
+    background:rgba(255,255,255,.055);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    padding:17px;
+
+    border-radius:15px;
+
+    margin-top:12px;
+}
+
+.note-date{
+    color:#64eaff;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.note-text{
+    white-space:pre-wrap;
+    color:#e5e7eb;
+}
+
+.note-delete{
+
+    margin-top:10px;
+
+    border:0;
+
+    padding:8px 12px;
+
+    border-radius:9px;
+
+    background:#ef4444;
+
+    color:white;
+
+    cursor:pointer;
+}
+
+/* =========================
+   FEATURES
+========================= */
+
+.features{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(200px,1fr));
+
+    gap:15px;
+}
+
+.feature{
+
+    padding:20px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    text-align:center;
+}
+
+.feature-icon{
+    font-size:35px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+
+    text-align:center;
+
+    padding:35px 20px;
+
+    color:#7f8aa8;
+
+    border-top:
+    1px solid rgba(255,255,255,.08);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    header{
+        padding-top:35px;
+    }
+
+    nav{
+        overflow-x:auto;
+        justify-content:flex-start;
+    }
+
+    nav button{
+        white-space:nowrap;
+    }
+
+    .card{
+        padding:18px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="background">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+</div>
+
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="logo">
+        YOUNG RISER
+    </div>
+
+    <div class="subtitle">
+        Smart Tools • Daily Routine • Productivity
+    </div>
+
+</header>
+
+
+<!-- NAV -->
+
+<nav>
+
+    <button onclick="scrollToSection('converter')">
+        📄 PDF Converter
+    </button>
+
+    <button onclick="scrollToSection('notepad')">
+        📝 Notepad
+    </button>
+
+    <button onclick="scrollToSection('features')">
+        ⚡ Features
+    </button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- =========================
+     PDF CONVERTER
+========================= -->
+
+<section
+class="card"
+id="converter">
+
+<h2>
+    📄 PDF → Excel Converter
+</h2>
+
+<p style="color:#aeb7d1;">
+    Upload a PDF and convert its text into an Excel spreadsheet.
+</p>
+
+
+<label
+class="upload-box"
+for="pdfFile">
+
+    <div class="upload-icon">
+        📑
+    </div>
+
+    <h3>
+        Tap to Upload PDF
+    </h3>
+
+    <p style="color:#8d96ae;">
+        PDF files only
+    </p>
+
+    <div
+    class="file-name"
+    id="fileName">
+    No file selected
+    </div>
+
+</label>
+
+
+<input
+type="file"
+id="pdfFile"
+accept=".pdf">
+
+
+<button
+class="main-btn"
+id="convertBtn"
+disabled>
+
+    ⚡ Convert to Excel
+
+</button>
+
+
+<div
+class="progress-container"
+id="progressContainer">
+
+    <div class="progress">
+
+        <div
+        class="progress-bar"
+        id="progressBar">
+        </div>
+
+    </div>
+
+    <div
+    class="status"
+    id="status">
+        Preparing...
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     DAILY NOTEPAD
+========================= -->
+
+<section
+class="card"
+id="notepad">
+
+<h2>
+    📝 Daily Routine Notepad
+</h2>
+
+<p style="color:#aeb7d1;">
+    Write your daily routine, plans, ideas or tasks.
+</p>
+
+
+<textarea
+id="noteInput"
+placeholder="Write today's routine here...
+
+Example:
+
+06:00 AM - Wake up
+07:00 AM - Study
+10:00 AM - School
+05:00 PM - Exercise
+08:00 PM - Homework
+10:30 PM - Sleep"></textarea>
+
+
+<div class="note-controls">
+
+    <button onclick="saveNote()">
+        💾 Save Note
+    </button>
+
+    <button onclick="clearNote()">
+        🗑️ Clear
+    </button>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     SAVED NOTES
+========================= -->
+
+<section class="card">
+
+<h2>
+    📚 Saved Daily Notes
+</h2>
+
+<input
+class="search"
+id="searchNotes"
+placeholder="🔎 Search notes..."
+oninput="displayNotes()">
+
+
+<div id="notesList"></div>
+
+</section>
+
+
+<!-- =========================
+     FEATURES
+========================= -->
+
+<section
+class="card"
+id="features">
+
+<h2>
+    ⚡ YOUNG RISER Tools
+</h2>
+
+<div class="features">
+
+    <div class="feature">
+
+        <div class="feature-icon">
+            📄
+        </div>
+
+        <h3>
+            PDF Converter
+        </h3>
+
+        <p>
+            Extract PDF text into Excel.
+        </p>
+
+    </div>
+
+
+    <div class="feature">
+
+        <div class="feature-icon">
+            📝
+        </div>
+
+        <h3>
+            Daily Notepad
+        </h3>
+
+        <p>
+            Save your daily routine.
+        </p>
+
+    </div>
+
+
+    <div class="feature">
+
+        <div class="feature-icon">
+            💾
+        </div>
+
+        <h3>
+            Local Storage
+        </h3>
+
+        <p>
+            Notes stay saved in your browser.
+        </p>
+
+    </div>
+
+
+    <div class="feature">
+
+        <div class="feature-icon">
+            📱
+        </div>
+
+        <h3>
+            Mobile Friendly
+        </h3>
+
+        <p>
+            Designed for phones and tablets.
+        </p>
+
+    </div>
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    <strong>
+        🚀 YOUNG RISER
+    </strong>
+
+    <br><br>
+
+    Dream • Work • Learn • Rise
+
+    <br><br>
+
+    © 2026 YOUNG RISER
+
+</footer>
+
+
+
+<script type="module">
+
+/* =========================
+   PDF.JS
+========================= */
+
+import * as pdfjsLib from
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs';
+
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const pdfFile =
+document.getElementById("pdfFile");
+
+const fileName =
+document.getElementById("fileName");
+
+const convertBtn =
+document.getElementById("convertBtn");
+
+const progressContainer =
+document.getElementById("progressContainer");
+
+const progressBar =
+document.getElementById("progressBar");
+
+const status =
+document.getElementById("status");
+
+
+let selectedFile = null;
+
+
+/* =========================
+   FILE SELECT
+========================= */
+
+pdfFile.addEventListener("change", function(){
+
+    selectedFile = this.files[0];
+
+    if(!selectedFile){
+
+        fileName.textContent =
+        "No file selected";
+
+        convertBtn.disabled = true;
+
+        return;
+    }
+
+
+    fileName.textContent =
+    "📄 " + selectedFile.name;
+
+    convertBtn.disabled = false;
+
+});
+
+
+/* =========================
+   CONVERT PDF
+========================= */
+
+convertBtn.addEventListener(
+"click",
+async function(){
+
+    if(!selectedFile){
+
+        alert("Please select a PDF.");
+
+        return;
+    }
+
+
+    try{
+
+        progressContainer.style.display =
+        "block";
+
+        progressBar.style.width =
+        "5%";
+
+        status.textContent =
+        "Reading PDF...";
+
+
+        const arrayBuffer =
+        await selectedFile.arrayBuffer();
+
+
+        const pdf =
+        await pdfjsLib.getDocument({
+            data:arrayBuffer
+        }).promise;
+
+
+        let rows = [];
+
+
+        for(
+            let pageNumber = 1;
+            pageNumber <= pdf.numPages;
+            pageNumber++
+        ){
+
+            status.textContent =
+            "Processing page " +
+            pageNumber +
+            " of " +
+            pdf.numPages;
+
+
+            const page =
+            await pdf.getPage(pageNumber);
+
+
+            const content =
+            await page.getTextContent();
+
+
+            let currentY = null;
+
+            let currentRow = [];
+
+
+            content.items.forEach(item => {
+
+                const text =
+                item.str.trim();
+
+                if(!text) return;
+
+
+                const y =
+                Math.round(
+                    item.transform[5]
+                );
+
+
+                if(
+                    currentY !== null &&
+                    Math.abs(y-currentY) > 5
+                ){
+
+                    if(currentRow.length){
+
+                        rows.push(
+                            currentRow
+                        );
+
+                    }
+
+                    currentRow = [];
+
+                }
+
+
+                currentRow.push(text);
+
+                currentY = y;
+
+            });
+
+
+            if(currentRow.length){
+
+                rows.push(currentRow);
+
+            }
+
+
+            progressBar.style.width =
+            (
+                pageNumber /
+                pdf.numPages *
+                80
+            ) + "%";
+
+        }
+
+
+        status.textContent =
+        "Creating Excel file...";
+
+
+        if(rows.length === 0){
+
+            alert(
+                "No readable text was found in this PDF."
+            );
+
+            progressContainer.style.display =
+            "none";
+
+            return;
+        }
+
+
+        /*
+        Make every row the same length
+        */
+
+        const maxColumns =
+        Math.max(
+            ...rows.map(row => row.length)
+        );
+
+
+        const normalizedRows =
+        rows.map(row => {
+
+            const newRow = [...row];
+
+            while(
+                newRow.length <
+                maxColumns
+            ){
+
+                newRow.push("");
+
+            }
+
+            return newRow;
+
+        });
+
+
+        /*
+        Add column names
+        */
+
+        const headers = [];
+
+        for(
+            let i = 1;
+            i <= maxColumns;
+            i++
+        ){
+
+            headers.push(
+                "Column " + i
+            );
+
+        }
+
+
+        normalizedRows.unshift(headers);
+
+
+        /*
+        Create Excel workbook
+        */
+
+        const worksheet =
+        XLSX.utils.aoa_to_sheet(
+            normalizedRows
+        );
+
+
+        const workbook =
+        XLSX.utils.book_new();
+
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "PDF Data"
+        );
+
+
+        /*
+        Download
+        */
+
+        const outputName =
+        selectedFile.name
+        .replace(/\.pdf$/i,"")
+        + ".xlsx";
+
+
+        XLSX.writeFile(
+            workbook,
+            outputName
+        );
+
+
+        progressBar.style.width =
+        "100%";
+
+
+        status.textContent =
+        "✅ Conversion complete!";
+
+
+        setTimeout(() => {
+
+            progressContainer.style.display =
+            "none";
+
+        },2000);
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Conversion failed. Please try another PDF."
+        );
+
+        progressContainer.style.display =
+        "none";
+
+    }
+
+});
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+window.scrollToSection =
+function(id){
+
+    document
+    .getElementById(id)
+    .scrollIntoView({
+        behavior:"smooth"
+    });
+
+};
+
+</script>
+
+
+<script>
+
+/* =========================
+   DAILY NOTES
+========================= */
+
+let notes =
+JSON.parse(
+localStorage.getItem(
+"youngRiserNotes"
+)) || [];
+
+
+/* =========================
+   SAVE NOTE
+========================= */
+
+function saveNote(){
+
+    const input =
+    document.getElementById(
+        "noteInput"
+    );
+
+    const text =
+    input.value.trim();
+
+
+    if(!text){
+
+        alert(
+            "Please write something first."
+        );
+
+        return;
+    }
+
+
+    const note = {
+
+        id:Date.now(),
+
+        text:text,
+
+        date:new Date()
+        .toLocaleString()
+
+    };
+
+
+    notes.unshift(note);
+
+
+    localStorage.setItem(
+        "youngRiserNotes",
+        JSON.stringify(notes)
+    );
+
+
+    input.value = "";
+
+    displayNotes();
+
+
+    alert(
+        "✅ Daily note saved!"
+    );
+
+}
+
+
+/* =========================
+   CLEAR INPUT
+========================= */
+
+function clearNote(){
+
+    document.getElementById(
+        "noteInput"
+    ).value = "";
+
+}
+
+
+/* =========================
+   DISPLAY NOTES
+========================= */
+
+function displayNotes(){
+
+    const list =
+    document.getElementById(
+        "notesList"
+    );
+
+
+    const search =
+    document.getElementById(
+        "searchNotes"
+    ).value
+    .toLowerCase();
+
+
+    const filtered =
+    notes.filter(note =>
+        note.text
+        .toLowerCase()
+        .includes(search)
+    );
+
+
+    if(filtered.length === 0){
+
+        list.innerHTML =
+        '<p style="color:#8993ad;text-align:center;">No saved notes yet.</p>';
+
+        return;
+    }
+
+
+    list.innerHTML = "";
+
+
+    filtered.forEach(note => {
+
+        const div =
+        document.createElement("div");
+
+        div.className = "note";
+
+
+        const date =
+        document.createElement("div");
+
+        date.className =
+        "note-date";
+
+        date.textContent =
+        "📅 " + note.date;
+
+
+        const text =
+        document.createElement("div");
+
+        text.className =
+        "note-text";
+
+        text.textContent =
+        note.text;
+
+
+        const deleteButton =
+        document.createElement("button");
+
+        deleteButton.className =
+        "note-delete";
+
+        deleteButton.textContent =
+        "🗑️ Delete";
+
+
+        deleteButton.onclick =
+        function(){
+
+            deleteNote(note.id);
+
+        };
+
+
+        div.appendChild(date);
+
+        div.appendChild(text);
+
+        div.appendChild(
+            deleteButton
+        );
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   DELETE NOTE
+========================= */
+
+function deleteNote(id){
+
+    if(
+        !confirm(
+            "Delete this note?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    notes =
+    notes.filter(
+        note => note.id !== id
+    );
+
+
+    localStorage.setItem(
+        "youngRiserNotes",
+        JSON.stringify(notes)
+    );
+
+
+    displayNotes();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+displayNotes();
+
+</script>
+
+</body>
+</html>
